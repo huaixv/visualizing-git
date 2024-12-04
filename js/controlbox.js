@@ -69,6 +69,7 @@ function(_yargs, d3, demos) {
     },
 
     persist: function () {
+      return
       if (window.localStorage) {
         window.localStorage.setItem('git-viz-snapshot', JSON.stringify(this.undoHistory))
       }
@@ -198,6 +199,22 @@ function(_yargs, d3, demos) {
       this.container = cBoxContainer;
       this.terminalOutput = log;
       this.input = input;
+
+      let demo = false
+      if (demo) {
+        setTimeout(() => {
+          this.command("git bisect bad");
+          this.command("git checkout HEAD~1")
+          this.command("git bisect bad");
+
+
+          this.command("git checkout HEAD~9")
+          this.command("git bisect good")
+          this.command("git bisect good")
+          this.command("git bisect bad")
+          this.command("git bisect good")
+        }, 1000);
+      }
 
       this.info(this.initialMessage);
     },
