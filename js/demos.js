@@ -347,6 +347,107 @@ define([], function () {
     ]
   }
 
+  var bisect = {
+    title: 'Bisect',
+    key: 'bisect',
+    message: 'Let\'s find the commit introducing bugs',
+    commitData: [
+      {
+        "id": "e137e9b",
+        "tags": [],
+        "message": "first commit",
+        "parent": "initial",
+        "cx": 50,
+        "cy": 318,
+        "branchless": false
+      },
+      {
+        "id": "790dd94",
+        "tags": [],
+        "parent": "e137e9b",
+        "cx": 140,
+        "cy": 318,
+        "branchless": false
+      },
+      {
+        "id": "96e9ce7",
+        "tags": [
+          "[bugfix1]"
+        ],
+        "parent": "790dd94",
+        "cx": 230,
+        "cy": 318,
+        "branchless": false
+      },
+      {
+        "id": "44db644",
+        "tags": [],
+        "parent": "96e9ce7",
+        "cx": 320,
+        "cy": 318,
+        "branchless": false
+      },
+      {
+        "id": "06127d7",
+        "tags": [],
+        "parent": "44db644",
+        "cx": 410,
+        "cy": 318,
+        "branchless": false
+      },
+      {
+        "id": "e8ce346",
+        "tags": [],
+        "parent": "06127d7",
+        "cx": 500,
+        "cy": 318,
+        "branchless": false
+      },
+      {
+        "id": "5749661",
+        "tags": [],
+        "parent": "e8ce346",
+        "cx": 590,
+        "cy": 318,
+        "branchless": false
+      },
+      {
+        "id": "60c6c2c",
+        "tags": [],
+        "parent": "5749661",
+        "cx": 230,
+        "cy": 318,
+        "branchless": false
+      },
+      {
+        "id": "8f7c801",
+        "parent": "60c6c2c",
+        "cx": 320,
+        "cy": 318,
+        "branchless": false
+      },
+      {
+        "id": "78ecb32",
+        "tags": [],
+        "parent": "8f7c801",
+        "cx": 410,
+        "cy": 318,
+        "branchless": false
+      },
+      {
+        "id": "12e9bbb",
+        "tags": [
+          "HEAD",
+          "master"
+        ],
+        "parent": "78ecb32",
+        "cx": 500,
+        "cy": 318,
+        "branchless": false
+      },
+    ]
+  }
+
   var rebase = {
     title: 'Rebasing',
     key: 'rebase',
@@ -357,6 +458,6 @@ define([], function () {
   }
 
   return [
-    free, freeWithRemote, upstreamChanges, rewrittenHistory, revert, cherryPick
+    free, freeWithRemote, upstreamChanges, rewrittenHistory, revert, cherryPick, bisect
   ]
 })
