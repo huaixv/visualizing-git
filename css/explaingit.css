@@ -254,6 +254,25 @@ circle.commit.logging {
   fill: #0099EE;
 }
 
+circle.commit.bisect-bad {
+  stroke: #660000;
+  fill: #ff5151;
+}
+
+circle.commit.bisect-bad.checked-out {
+  stroke: #660000;
+  fill: #ff5151;
+}
+
+circle.commit.bisect-good {
+  fill: #8ce08c;
+  stroke: #339900;
+}
+
+circle.commit.bisect-good.checked-out {
+  fill: #8ce08c;
+}
+
 .commit-pointer {
   stroke: rgba(100, 100, 100, 0.5);
   stroke-width: 4;
