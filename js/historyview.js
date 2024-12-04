@@ -645,6 +645,12 @@ define(['d3'], function() {
         })
         .classed('checked-out', function(d) {
           return d.tags.indexOf('HEAD') > -1
+        })
+        .classed('bisect-good', function(d) {
+          return d.tags.some(x => x.indexOf("[bisect/good") == 0);
+        })
+        .classed('bisect-bad', function(d) {
+          return d.tags.some(x => x.indexOf("[bisect/bad") == 0);
         });
 
       existingCircles.transition()
@@ -916,7 +922,7 @@ define(['d3'], function() {
           var classes = 'branch-tag';
           if (d.name.indexOf('[') === 0 && d.name.indexOf(']') === d.name.length - 1) {
             classes += ' git-tag';
-          } else if (d.name.indexOf('/') >= 0) {
+          } else if (d.name.indexOf('/') >= 0 && d.name.indexOf('bisect/') === -1) {
             classes += ' remote-branch';
           } else if (d.name.toUpperCase() === 'HEAD') {
             classes += ' head-tag';
