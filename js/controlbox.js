@@ -250,6 +250,7 @@ function(_yargs, d3, demos) {
         this.info('`git rev_parse`')
         this.info('`git revert`')
         this.info('`git tag`')
+        this.info('`git bisect`')
         return
       }
 
@@ -390,6 +391,31 @@ function(_yargs, d3, demos) {
           )
         }
       })
+    },
+
+
+    bisect: function(args, opts, cmdStr) {
+      if (args.length != 1) {
+        this.error('You must specify a command for bisect')
+      }
+      let subcmd = args[0]
+      // must be in 'start', 'good', 'bad'
+      if (subcmd  === 'start') {
+        this.info("Waiting for good and bad commits")
+      } else if (subcmd === 'good') {
+        // tag this commit as good
+        this.getRepoView().bisect('good')
+      } else if (subcmd === 'bad') {
+        // tag this commit as bad
+        this.getRepoView().bisect('bad')
+      } else {
+        this.error("unknown subcommand for bisect")
+      }
+
+      let firstBadCommit = this.getRepoView()._bisectSuccess();
+      if (firstBadCommit) {
+        this.info("the first bad commit is " + firstBadCommit.id);
+      }
     },
 
     log: function(args) {

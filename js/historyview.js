@@ -1230,8 +1230,8 @@ define(['d3'], function() {
       return this;
     },
 
-    tag: function(name) {
-      this.branch('[' + name + ']');
+    tag: function(name, commit) {
+      this.branch('[' + name + ']', commit);
     },
 
     deleteBranch: function(name) {
@@ -1262,6 +1262,113 @@ define(['d3'], function() {
       }
 
       this.renderTags();
+    },
+
+    _findBisectRange: function() {
+      // if both good and bad commits are marked
+      let badCommits = this.commitData.filter(function (d) {
+        return d.tags.some(x => x.indexOf("[bisect/bad") == 0);
+      });
+
+      let goodCommits = this.commitData.filter(function (d) {
+        return d.tags.some(x => x.indexOf("[bisect/good") == 0);
+      });
+
+      // continue waiting for furthur commands
+      if (badCommits.length === 0) {
+        throw new Error("waiting for bad commits");
+      }
+      if (goodCommits.length === 0) {
+        throw new Error("waiting for good commits");
+      }
+
+      // locate interval to bisect
+      let that = this
+      let badCommit = badCommits.reduce(function (oldest, current) {
+        return that.isAncestorOf(current, oldest) ? current : oldest;
+      });
+      let goodCommit = goodCommits.reduce(function (latest, current) {
+        return that.isAncestorOf(latest, current) ? current : latest;
+      });
+
+      // sanity check
+      if (this.isAncestorOf(badCommit, goodCommit)) {
+        throw new Error("no commits between known good and bad commits")
+      }
+
+      return [goodCommit, badCommit];
+    },
+
+    _bisectSuccess: function() {
+      let [goodCommit, badCommit] = this._findBisectRange();
+      if (goodCommit.id == badCommit.parent) {
+        return badCommit
+      } else {
+        return null;
+      }
+    },
+
+    _bisectAddTag: function(term) {
+      let tagName = "bisect/" + term;
+
+      // git create good tag with commit hashes
+      // we omit this for clarity
+      // if (term === "good") {
+      //   let headCommit = this.getCommit("HEAD")
+      //   let hashedTagName = "bisect/" + term + "-" + headCommit.id.slice(0, 4)
+      //   this.tag(hashedTagName, "HEAD")
+      // }
+
+      let oldCommit = this.getCommit(tagName)
+      if (oldCommit) {
+        let bracketedTagName = "[" + tagName + "]"
+        this.moveTag(bracketedTagName, "HEAD");
+      } else {
+        this.tag(tagName, "HEAD")
+      }
+      this.getCircle("HEAD").classed("bisect-" + term, true)
+
+      // exception will prevent automatic rendering,
+      // manually trigger it
+      this.renderTags()
+    },
+
+    bisect: function (term) {
+      // mark ref as good/bad
+      let tagName = "bisect/" + term;
+
+      if (term === "good" || term === "old") {
+        term = "good"
+
+      } else if (term === "bad" || term === "new") {
+        term = "bad"
+      } else {
+        throw new Error("unknown bisect term");
+      }
+
+      this._bisectAddTag(term)
+
+      if (this._bisectSuccess()) {
+        return
+      }
+
+      // otherwise do bisect
+      let [goodCommit, badCommit] = this._findBisectRange();
+
+      let ptr = badCommit, mid = badCommit;
+      for (; ;) {
+        ptr = this.getCommit(ptr.parent);
+        if (ptr.id == goodCommit.id) {
+          break;
+        }
+        mid = this.getCommit(mid.parent);
+        ptr = this.getCommit(ptr.parent);
+        if (ptr.id == goodCommit.id) {
+          break;
+        }
+      }
+
+      this.checkout(mid)
     },
 
     checkout: function(ref) {
